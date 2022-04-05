@@ -125,7 +125,7 @@ export const ReadSuppliers = ({ suppliers, isUpdate, setIsUpdate, onUpdateSubmit
 										<td>{ele.contact}</td>
 										<td>{ele.note}</td>
 										<td>{ele.margin_ratio}</td>
-										<UpdateSwitch eleId={ele.id} isUpdate={isUpdate} setIsUpdate={setIsUpdate} setUpdateForm={setUpdateForm} suppliers={suppliers} />
+										<td><UpdateSwitch eleId={ele.id} isUpdate={isUpdate} setIsUpdate={setIsUpdate} setUpdateForm={setUpdateForm} suppliers={suppliers} /></td>
 									</tr>
 								)
 							}

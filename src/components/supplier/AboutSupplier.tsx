@@ -24,10 +24,13 @@ interface IUpdateForm {
 	target: number,
 }
 
-type AppModeType = 'aboutSupplier' | 'aboutProduct';
+interface IMode {
+	about: string,
+	productId: number,
+}
 
 type Props = {
-	setMode: Dispatch<SetStateAction<AppModeType>>,
+	setMode: Dispatch<SetStateAction<IMode>>,
 }
 
 type createFormType = { name: string, address: string, contact: string, note: string, margin_ratio: string | number }

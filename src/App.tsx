@@ -3,22 +3,29 @@ import './App.css';
 import { AboutSupplier } from './components/supplier/AboutSupplier';
 import { AboutProduct } from './components/product/AboutProduct';
 
-type AppModeType = 'aboutSupplier' | 'aboutProduct';
+interface IMode {
+	about: string,
+	productId: number,
+}
 
 function App() {
-	const initialMode: AppModeType = 'aboutSupplier';
 
-	const [ mode, setMode ] = useState<AppModeType>(initialMode);
+	const initialMode = {
+		about: 'Supplier',
+		productId: 1,
+	}
+
+	const [ mode, setMode ] = useState<IMode>(initialMode);
 //	useEffect(() => {
 //	}, [state])
 	
 	let article = null;
-	switch (mode){
-		case 'aboutSupplier':
+	switch (mode.about){
+		case 'Supplier':
 			article = 
 				<AboutSupplier setMode={setMode}/>
 			break;
-		case 'aboutProduct':
+		case 'Product':
 			article = 
 				<AboutProduct />
 			break;
@@ -30,7 +37,7 @@ function App() {
 		<div className="App">
 
 			<div>
-				mode : {mode}
+				mode : {mode.about}
 			</div>
 			<br></br>
 			{ article }
