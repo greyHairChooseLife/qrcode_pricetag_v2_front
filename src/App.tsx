@@ -27,7 +27,7 @@ function App() {
 			break;
 		case 'Product':
 			article = 
-				<AboutProduct />
+				<AboutProduct setMode={setMode}/>
 			break;
 		default :
 			console.log(mode);
