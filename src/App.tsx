@@ -3,7 +3,7 @@ import './App.css';
 import { AboutSupplier } from './components/supplier/AboutSupplier';
 import { AboutProduct } from './components/product/AboutProduct';
 
-interface IMode {
+interface IRootMode {
 	about: string,
 	productId: number,
 }
@@ -15,29 +15,29 @@ function App() {
 		productId: 1,
 	}
 
-	const [ mode, setMode ] = useState<IMode>(initialMode);
+	const [ rootMode, setRootMode ] = useState<IRootMode>(initialMode);
 //	useEffect(() => {
 //	}, [state])
 	
 	let article = null;
-	switch (mode.about){
+	switch (rootMode.about){
 		case 'Supplier':
 			article = 
-				<AboutSupplier setMode={setMode}/>
+				<AboutSupplier setRootMode={setRootMode}/>
 			break;
 		case 'Product':
 			article = 
-				<AboutProduct setMode={setMode}/>
+				<AboutProduct rootMode={rootMode} setRootMode={setRootMode}/>
 			break;
 		default :
-			console.log(mode);
+			console.log(rootMode);
 	}
 
 	return (
 		<div className="App">
 
 			<div>
-				mode : {mode.about}
+				mode : {rootMode.about}
 			</div>
 			<br></br>
 			{ article }

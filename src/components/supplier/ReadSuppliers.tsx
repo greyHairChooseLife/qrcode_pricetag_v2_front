@@ -15,18 +15,24 @@ interface IUpdateForm {
 	target: number,
 }
 
+interface IRootMode {
+	about: string,
+	productId: number,
+}
+
 type Props = {
 	suppliers: ISupplierInfo[] | null,
 	isUpdate: IUpdateForm,
 	setIsUpdate: Dispatch<SetStateAction<IUpdateForm>>,
 	onUpdateSubmit: (form: ISupplierInfo) => void,
 	onDeleteSubmit: (form: {id: number}) => void,
+	setRootMode: Dispatch<SetStateAction<IRootMode>>,
 }
 
 type CheckValidation = ISupplierInfo;
 type updateFormType = ISupplierInfo;
 
-export const ReadSuppliers = ({ suppliers, isUpdate, setIsUpdate, onUpdateSubmit, onDeleteSubmit }: Props) => {
+export const ReadSuppliers = ({ suppliers, isUpdate, setIsUpdate, onUpdateSubmit, onDeleteSubmit, setRootMode }: Props) => {
 
 	const [ updateForm, setUpdateForm ] = useState<updateFormType>({
 		id: 0,
@@ -88,6 +94,16 @@ export const ReadSuppliers = ({ suppliers, isUpdate, setIsUpdate, onUpdateSubmit
 		});
 	};
 
+	//********************************************************************
+	//		SET ROOT MODE	
+	//********************************************************************
+	const handleSetMode = (id: number): void => {
+		setRootMode({
+			about: 'Product',
+			productId: id,
+		})
+	}
+
 	return (
 		<div>
 			<form id="updateForm" onSubmit={handleSubmit}></form>
@@ -120,11 +136,11 @@ export const ReadSuppliers = ({ suppliers, isUpdate, setIsUpdate, onUpdateSubmit
 							}else{
 								return (
 									<tr key={ele.id}>
-										<td onClick={()=>{alert('hi')}}>{ele.name}</td>
-										<td>{ele.address}</td>
-										<td>{ele.contact}</td>
-										<td>{ele.note}</td>
-										<td>{ele.margin_ratio}</td>
+										<td onClick={()=>{handleSetMode(ele.id)}}>{ele.name}</td>
+										<td onClick={()=>{handleSetMode(ele.id)}}>{ele.address}</td>
+										<td onClick={()=>{handleSetMode(ele.id)}}>{ele.contact}</td>
+										<td onClick={()=>{handleSetMode(ele.id)}}>{ele.note}</td>
+										<td onClick={()=>{handleSetMode(ele.id)}}>{ele.margin_ratio}</td>
 										<td><UpdateSwitch eleId={ele.id} isUpdate={isUpdate} setIsUpdate={setIsUpdate} setUpdateForm={setUpdateForm} suppliers={suppliers} /></td>
 									</tr>
 								)

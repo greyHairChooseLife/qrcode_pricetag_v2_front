@@ -8,19 +8,20 @@ const api = axios.create({
 	//********************************************************************
 	//		Type Def	
 	//********************************************************************
-interface IMode {
+interface IRootMode {
 	about: string,
 	productId: number,
 }
 
 type Props = {
-	setMode: Dispatch<SetStateAction<IMode>>,
+	rootMode: IRootMode,
+	setRootMode: Dispatch<SetStateAction<IRootMode>>,
 }
 
-export const AboutProduct = ({ setMode }: Props) => {
+export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 
 	return (
-		<div>hi, I am about Product component.</div>
+		<div>hi, I am about Product component. I am pointing {rootMode.productId}</div>
 	);
 }
 

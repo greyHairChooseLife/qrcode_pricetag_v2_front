@@ -24,18 +24,18 @@ interface IUpdateForm {
 	target: number,
 }
 
-interface IMode {
+interface IRootMode {
 	about: string,
 	productId: number,
 }
 
 type Props = {
-	setMode: Dispatch<SetStateAction<IMode>>,
+	setRootMode: Dispatch<SetStateAction<IRootMode>>,
 }
 
 type createFormType = { name: string, address: string, contact: string, note: string, margin_ratio: string | number }
 
-export const AboutSupplier = ({ setMode }: Props) => {
+export const AboutSupplier = ({ setRootMode }: Props) => {
 	//********************************************************************
 	//		generate useState
 	//********************************************************************
@@ -102,7 +102,7 @@ export const AboutSupplier = ({ setMode }: Props) => {
 		setReRender([...reRender]);
 	}
 
-	const read = <ReadSuppliers suppliers={suppliers} isUpdate={isUpdate} setIsUpdate={setIsUpdate} onUpdateSubmit={onUpdateSubmit} onDeleteSubmit={onDeleteSubmit}/>;
+	const read = <ReadSuppliers suppliers={suppliers} isUpdate={isUpdate} setIsUpdate={setIsUpdate} onUpdateSubmit={onUpdateSubmit} onDeleteSubmit={onDeleteSubmit} setRootMode={setRootMode} />;
 
 	//********************************************************************
 	//		render conditionally
