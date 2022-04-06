@@ -145,8 +145,7 @@ export const ReadSuppliers = ({ suppliers, isUpdate, setIsUpdate, onUpdateSubmit
 									</tr>
 								)
 							}
-						}
-						)}
+						})}
 					</tbody>
 				</table>
 				:

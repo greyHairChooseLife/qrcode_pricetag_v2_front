@@ -1,4 +1,5 @@
 import React, { useState, useEffect, SetStateAction, Dispatch } from 'react';
+import { ReadCurrent } from './ReadCurrent';
 import axios from 'axios';
 
 const api = axios.create({
@@ -16,6 +17,10 @@ interface IRootMode {
 type Props = {
 	rootMode: IRootMode,
 	setRootMode: Dispatch<SetStateAction<IRootMode>>,
+}
+
+interface Imode {
+	parseResult: 'current' | 'updating' | 'error',
 }
 
 interface ISupplierInfo {
@@ -38,17 +43,28 @@ interface IProductInfo {
 	barcode: string,
 }
 
+interface IError {
+	id: string,
+}
+
 export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 	//********************************************************************
 	//		generate useState
 	//********************************************************************
-	const [reRender, setReRender] = useState([]);					//just for rerendering
 	const [supplier, setSupplier] = useState<ISupplierInfo[] | null>(null);
 	const [product, setProduct] = useState<IProductInfo[] | null>(null);
-	
+
+	const [mode, setMode] = useState<Imode>({
+		parseResult: 'current',
+	});
+
+	const [current, setCurrent] = useState<IProductInfo[] | null>(null);
+	const [updating, setUpdating] = useState<IProductInfo[] | null>(null);
+	const [adding, setAdding] = useState<IProductInfo[] | null>(null);
+	const [error, setError] = useState<IError[] | null>(null);
 	
 	//********************************************************************
-	//		get init supplier && re-render as suppliers updated
+	//		get init supplier, products
 	//********************************************************************
 	useEffect(() => {
 		const fetchSuppliers = async () => {
@@ -73,14 +89,19 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 		fetchProduct();
 	}, []);
 
-	useEffect(() => {
-	}, []);
-	
-	console.log(product);
 
+	let article = null;
+	//********************************************************************
+	//		read current
+	//********************************************************************
+	article = <ReadCurrent product={product}></ReadCurrent>
+	//Update Component to upload xlsx file and parse it and update states like 'add, update, err ...'
 
 	return (
-		<div>hi, I am about Product component. I am pointing {rootMode.productId}</div>
+		<div>
+			<div>hi, I am about Product component. I am pointing {rootMode.productId}</div>
+			{article}
+		</div>
 	);
 }
 
