@@ -3,7 +3,9 @@ import React, { useState, Dispatch, SetStateAction } from 'react'
 	//********************************************************************
 	//		Type Def	
 	//********************************************************************
-interface ISupplierInfo{ id: number, name: string,
+interface ISupplierInfo{ 
+	id: number, 
+	name: string,
 	address: string,
 	contact: string,
 	note?: string,

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, SetStateAction, Dispatch } from 'react';
 import { ReadCurrent } from './ReadCurrent';
+import { UploadXLSX } from './UploadXLSX';
 import axios from 'axios';
 
 const api = axios.create({
@@ -47,6 +48,19 @@ interface IError {
 	id: string,
 }
 
+interface IFileColumns {
+	name: number,
+	size: string,
+	purchased_cost: number,
+	barcode: string,
+	lineNumber: number,
+}
+
+interface IParseXLSX {
+	resultClass: 'updating' | 'adding' | 'error',
+	result: IFileColumns[] | IError[],
+}
+
 export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 	//********************************************************************
 	//		generate useState
@@ -90,15 +104,41 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 	}, []);
 
 
-	let article = null;
+	let article, uploadXLSX = null;
 	//********************************************************************
 	//		read current
 	//********************************************************************
-	article = <ReadCurrent product={product}></ReadCurrent>
+	if(mode.parseResult === 'current'){
+		article = <ReadCurrent product={product}></ReadCurrent>
+	}
+
+	//********************************************************************
+	//		upload XLSX 
+	//********************************************************************
+		const onParseXLSX = (form: IParseXLSX):void => {
+		switch (form.resultClass) {
+			case 'updating':
+				//form.result can't be typed IError[] in this case. Why error? Maybe comeback after telling the condition at <UploadXLSX />
+				//setUpdating({...form.result})
+				break;
+			case 'adding':
+				//setAdding({...form.result})
+				console.log('adding: ', form.result);
+				break;
+			case 'error':
+				//setError({...form.result})
+				console.log('err: ', form.result);
+				break;
+			default:
+				break;
+		}
+	}
+	uploadXLSX = <UploadXLSX product={product} onParseXLSX={onParseXLSX} setMode={setMode}></UploadXLSX>
 	//Update Component to upload xlsx file and parse it and update states like 'add, update, err ...'
 
 	return (
 		<div>
+			{uploadXLSX}
 			<div>hi, I am about Product component. I am pointing {rootMode.productId}</div>
 			{article}
 		</div>

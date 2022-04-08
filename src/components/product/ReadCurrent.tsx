@@ -16,6 +16,7 @@ type currentPropsType = {
 }
 
 export const ReadCurrent = ({ product }: currentPropsType) => {
+	//if(product === null || []) return (<div>등록된 상품이 없습니다.</div>)
 	if(product === null) return (<div>등록된 상품이 없습니다.</div>)
 	else{
 		product.sort((a, b): number => {	//제품명으로 비교하고, 같은 제품명일 경우 사이즈로 비교
