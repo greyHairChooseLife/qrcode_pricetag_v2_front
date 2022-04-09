@@ -49,16 +49,24 @@ interface IError {
 }
 
 interface IFileColumns {
-	name: number,
+	name: string,
 	size: string,
 	purchased_cost: number,
 	barcode: string,
 	lineNumber: number,
 }
 
+interface IUpdate {
+	update: {
+		ele: IFileColumns,
+		diff: string[],
+	}[],
+	add: IFileColumns[] | null,
+}
+
 interface IParseXLSX {
-	resultClass: 'updating' | 'adding' | 'error',
-	result: IFileColumns[] | IError[],
+	resultClass: 'update' | 'addOnly' | 'error',
+	result: IUpdate | IFileColumns[] | IError[],
 }
 
 export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
@@ -117,13 +125,14 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 	//********************************************************************
 		const onParseXLSX = (form: IParseXLSX):void => {
 		switch (form.resultClass) {
-			case 'updating':
+			case 'update':
 				//form.result can't be typed IError[] in this case. Why error? Maybe comeback after telling the condition at <UploadXLSX />
 				//setUpdating({...form.result})
+				console.log('update: ', form.result);
 				break;
-			case 'adding':
+			case 'addOnly':
 				//setAdding({...form.result})
-				console.log('adding: ', form.result);
+				console.log('addOnly: ', form.result);
 				break;
 			case 'error':
 				//setError({...form.result})

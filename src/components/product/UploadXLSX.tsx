@@ -19,17 +19,25 @@ interface IError {
 	id: string,
 }
 
-interface IParseXLSX {
-	resultClass: 'updating' | 'adding' | 'error',
-	result: IFileColumns[] | IError[],
+interface IUpdate {
+	update: {
+		ele: IFileColumns,
+		diff: string[],
+	}[],
+	add: IFileColumns[] | null,
 }
 
-interface Imode {
+interface IParseXLSX {
+	resultClass: 'update' | 'addOnly' | 'error',
+	result: IUpdate | IFileColumns[] | IError[],
+}
+
+interface IMode {
 	parseResult: 'current' | 'updating' | 'error',
 }
 
 interface IFileColumns {
-	name: number,
+	name: string,
 	size: string,
 	purchased_cost: number,
 	barcode: string,
@@ -39,10 +47,10 @@ interface IFileColumns {
 type uploadXLSXProps = {
 	product: IProductInfo[] | null,
 	onParseXLSX: (form: IParseXLSX)=> void,
-	setMode: Dispatch<SetStateAction<Imode>>,
+	setMode: Dispatch<SetStateAction<IMode>>,
 }
 
-export const UploadXLSX = ( { product, onParseXLSX }: uploadXLSXProps ) => {
+export const UploadXLSX = ( { product, onParseXLSX, setMode }: uploadXLSXProps ) => {
 	//const [originFileData, setOriginFileData] = useState<IFileColumns[] | null>(null);
 	const [fileError, setFileError] = useState<any[] | null>(null);
 	const [readFileData, setReadFileData] = useState<IFileColumns[] | null>(null);
@@ -79,22 +87,65 @@ export const UploadXLSX = ( { product, onParseXLSX }: uploadXLSXProps ) => {
 	}, [comparable]);
 
 	const compare = (prev: IProductInfo[] | null, cur: IFileColumns[]) => {
+		if(prev === null || prev.length === 0){			//while prev is empty, add everything
+			onParseXLSX({
+				resultClass: 'addOnly',
+				result: cur
+			});
+			return;
+		}
+
+		const forAdding: IFileColumns[] = [];
+		const forUpdating: IFileColumns[]= [];
+		const forUpdatingOrigin: IProductInfo[]= [];
 		const sortByBarcode = (a: IProductInfo | IFileColumns, b: IProductInfo | IFileColumns): number => {
 			return Number(a.barcode) - Number(b.barcode);
 		}
-		if(prev === null || prev.length === 0){
-			console.log('prev is empty, add everything');
-			onParseXLSX({
-				resultClass: 'adding',
-				result: cur
+		prev.sort(sortByBarcode);
+		cur.sort(sortByBarcode);
+		if(cur !== null){					//get pure elements for updating
+			cur.forEach((ele) => {
+				for(var i=0; i<prev.length; i++){
+					if(Number(ele.barcode) === Number(prev[i].barcode)){
+						forUpdating.push(ele);
+						forUpdatingOrigin.push(prev[i]);
+						break;
+					}else if(Number(ele.barcode) < Number(prev[i].barcode)){
+						forAdding.push(ele);
+						break;
+					}
+				}
 			});
-		}else if(cur !== null){
-			prev.sort(sortByBarcode);
-			cur.sort(sortByBarcode);
-			console.log('p: ', prev);
-			console.log('c: ', cur);
+			console.log('for Add: ', forAdding);
+			console.log('for Update: ', forUpdating);
+			console.log('for UpdateOrigin: ', forUpdatingOrigin);
 		}
-		
+
+		const compared = forUpdating.map((ele, idx) => {	//comparing start sincerely...
+			const diff = [];
+			if(ele.name !== forUpdatingOrigin[idx].name){
+				diff.push('name');
+			}
+			if(ele.size !== forUpdatingOrigin[idx].size){
+				diff.push('size');
+			}
+			if(ele.purchased_cost !== forUpdatingOrigin[idx].purchased_cost){
+				diff.push('purchased_cost');
+			}
+			return {
+				ele: ele,
+				diff: diff,
+			}
+		})
+		console.log('compared: ', compared);
+
+		onParseXLSX({
+			resultClass: 'update',
+			result: {
+				update: compared,
+				add: forAdding, 
+			}
+		});
 	}
 
 	const checkValidation = (fileReadData: IFileColumns[] | null) => {
