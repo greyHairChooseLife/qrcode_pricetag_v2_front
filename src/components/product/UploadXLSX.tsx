@@ -16,21 +16,33 @@ interface IProductInfo {
 }
 
 interface IError {
-	id: string,
+	category: 'barcodeUndefined' | 'barcodeWrong' | 'nameUndefined' | 'purchased_costUndefined' | 'purchased_costWrong',
+	lineNumber: number,
 }
 
 interface IUpdate {
 	update: {
 		ele: IFileColumns,
+		origin: IProductInfo,
 		diff: string[],
 	}[],
 	add: IFileColumns[] | null,
 }
 
-interface IParseXLSX {
-	resultClass: 'update' | 'addOnly' | 'error',
-	result: IUpdate | IFileColumns[] | IError[],
+interface IParseXLSXUpdate {
+	resultClass: 'update',
+	result: IUpdate,
 }
+interface IParseXLSXAddOnly {
+	resultClass: 'addOnly',
+	result: IFileColumns[],
+}
+interface IParseXLSXError {
+	resultClass: 'error',
+	result: IError[],
+}
+
+type parseXLSXType = IParseXLSXUpdate | IParseXLSXAddOnly | IParseXLSXError;
 
 interface IMode {
 	parseResult: 'current' | 'updating' | 'error',
@@ -46,13 +58,13 @@ interface IFileColumns {
 
 type uploadXLSXProps = {
 	product: IProductInfo[] | null,
-	onParseXLSX: (form: IParseXLSX)=> void,
-	setMode: Dispatch<SetStateAction<IMode>>,
+	onParseXLSX: (form: parseXLSXType)=> void,
+	//setMode: Dispatch<SetStateAction<IMode>>,
 }
 
-export const UploadXLSX = ( { product, onParseXLSX, setMode }: uploadXLSXProps ) => {
+export const UploadXLSX = ( { product, onParseXLSX }: uploadXLSXProps ) => {
 	//const [originFileData, setOriginFileData] = useState<IFileColumns[] | null>(null);
-	const [fileError, setFileError] = useState<any[] | null>(null);
+	const [fileError, setFileError] = useState<IError[] | null>(null);
 	const [readFileData, setReadFileData] = useState<IFileColumns[] | null>(null);
 	const [comparable, setComparable] = useState<boolean>(false);
 
@@ -66,12 +78,12 @@ export const UploadXLSX = ( { product, onParseXLSX, setMode }: uploadXLSXProps )
 	useEffect(() => {						// if fileError exist then it stops comparing && exec final function onParseXLSX() to feed back for user
 		if(fileError !== null){
 			if(fileError.length > 0){
-				console.log('file has err');
 				setComparable(false);
 				onParseXLSX({
 					resultClass: 'error',
 					result: fileError
 				});
+				//setMode({parseResult: 'error'})
 			}
 			else
 				setComparable(true);
@@ -80,9 +92,7 @@ export const UploadXLSX = ( { product, onParseXLSX, setMode }: uploadXLSXProps )
 
 	useEffect(() => {						// exec conditions : no error, 
 		if(comparable === true && readFileData !== null){
-			const prev = product;
-			const cur = readFileData;
-			compare(prev, cur);				
+			compare(product, readFileData);				
 		}
 	}, [comparable]);
 
@@ -92,6 +102,7 @@ export const UploadXLSX = ( { product, onParseXLSX, setMode }: uploadXLSXProps )
 				resultClass: 'addOnly',
 				result: cur
 			});
+			//setMode({parseResult: 'updating'})
 			return;
 		}
 
@@ -116,9 +127,6 @@ export const UploadXLSX = ( { product, onParseXLSX, setMode }: uploadXLSXProps )
 					}
 				}
 			});
-			console.log('for Add: ', forAdding);
-			console.log('for Update: ', forUpdating);
-			console.log('for UpdateOrigin: ', forUpdatingOrigin);
 		}
 
 		const compared = forUpdating.map((ele, idx) => {	//comparing start sincerely...
@@ -134,10 +142,10 @@ export const UploadXLSX = ( { product, onParseXLSX, setMode }: uploadXLSXProps )
 			}
 			return {
 				ele: ele,
+				origin: forUpdatingOrigin[idx],
 				diff: diff,
 			}
 		})
-		console.log('compared: ', compared);
 
 		onParseXLSX({
 			resultClass: 'update',
@@ -146,11 +154,12 @@ export const UploadXLSX = ( { product, onParseXLSX, setMode }: uploadXLSXProps )
 				add: forAdding, 
 			}
 		});
+		//setMode({parseResult: 'updating'})
 	}
 
 	const checkValidation = (fileReadData: IFileColumns[] | null) => {
 		if(fileReadData !== null){
-			const allError = fileReadData.reduce((prev:any, cur:any):any => {
+			const allError = fileReadData.reduce((prev:any, cur:any):IError[] => {
 				if(cur.barcode === undefined){
 					prev.push({
 						category: 'barcodeUndefined',

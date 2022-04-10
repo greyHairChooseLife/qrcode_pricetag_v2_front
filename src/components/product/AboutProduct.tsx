@@ -1,6 +1,7 @@
 import React, { useState, useEffect, SetStateAction, Dispatch } from 'react';
 import { ReadCurrent } from './ReadCurrent';
 import { UploadXLSX } from './UploadXLSX';
+import { SpreadUpdate, SpreadAdd, SpreadError } from './FileResult';
 import axios from 'axios';
 
 const api = axios.create({
@@ -45,7 +46,8 @@ interface IProductInfo {
 }
 
 interface IError {
-	id: string,
+	category: 'barcodeUndefined' | 'barcodeWrong' | 'nameUndefined' | 'purchased_costUndefined' | 'purchased_costWrong',
+	lineNumber: number,
 }
 
 interface IFileColumns {
@@ -59,15 +61,26 @@ interface IFileColumns {
 interface IUpdate {
 	update: {
 		ele: IFileColumns,
+		origin: IProductInfo,
 		diff: string[],
 	}[],
 	add: IFileColumns[] | null,
 }
 
-interface IParseXLSX {
-	resultClass: 'update' | 'addOnly' | 'error',
-	result: IUpdate | IFileColumns[] | IError[],
+interface IParseXLSXUpdate {
+	resultClass: 'update',
+	result: IUpdate,
 }
+interface IParseXLSXAddOnly {
+	resultClass: 'addOnly',
+	result: IFileColumns[],
+}
+interface IParseXLSXError {
+	resultClass: 'error',
+	result: IError[],
+}
+
+type parseXLSXType = IParseXLSXUpdate | IParseXLSXAddOnly | IParseXLSXError;
 
 export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 	//********************************************************************
@@ -81,8 +94,8 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 	});
 
 	const [current, setCurrent] = useState<IProductInfo[] | null>(null);
-	const [updating, setUpdating] = useState<IProductInfo[] | null>(null);
-	const [adding, setAdding] = useState<IProductInfo[] | null>(null);
+	const [updating, setUpdating] = useState<IUpdate | null>(null);
+	const [adding, setAdding] = useState<IFileColumns[] | null>(null);
 	const [error, setError] = useState<IError[] | null>(null);
 	
 	//********************************************************************
@@ -111,38 +124,51 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 		fetchProduct();
 	}, []);
 
+	let article: any = null;
+	let uploadXLSX = null;
 
-	let article, uploadXLSX = null;
+	
 	//********************************************************************
-	//		read current
+	//		assign to article by state: mode	
 	//********************************************************************
 	if(mode.parseResult === 'current'){
 		article = <ReadCurrent product={product}></ReadCurrent>
 	}
+	else if(mode.parseResult === 'updating'){
+		article = 
+			<div>
+				<SpreadAdd add={adding}></SpreadAdd>
+				<SpreadUpdate update={updating}></SpreadUpdate>
+			</div>
+	}
+	else if(mode.parseResult === 'error'){
+		article = <SpreadError error={error}></SpreadError>
+	}
 
 	//********************************************************************
-	//		upload XLSX 
+	//		upload XLSX function
 	//********************************************************************
-		const onParseXLSX = (form: IParseXLSX):void => {
+	const onParseXLSX = (form: parseXLSXType ):void => {
 		switch (form.resultClass) {
 			case 'update':
-				//form.result can't be typed IError[] in this case. Why error? Maybe comeback after telling the condition at <UploadXLSX />
-				//setUpdating({...form.result})
-				console.log('update: ', form.result);
+				//setUpdating({...form.result}) console.log('update: ', form.result); break;
+				setUpdating(form.result);
+				setMode({parseResult: 'updating'});
 				break;
 			case 'addOnly':
-				//setAdding({...form.result})
-				console.log('addOnly: ', form.result);
+				setAdding(form.result);
+				setMode({parseResult: 'updating'});
 				break;
 			case 'error':
-				//setError({...form.result})
-				console.log('err: ', form.result);
+				setError(form.result);
+				setMode({parseResult: 'error'});
 				break;
 			default:
 				break;
-		}
+			}
 	}
-	uploadXLSX = <UploadXLSX product={product} onParseXLSX={onParseXLSX} setMode={setMode}></UploadXLSX>
+
+	uploadXLSX = <UploadXLSX product={product} onParseXLSX={onParseXLSX} ></UploadXLSX>
 	//Update Component to upload xlsx file and parse it and update states like 'add, update, err ...'
 
 	return (
