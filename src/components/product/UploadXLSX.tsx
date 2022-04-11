@@ -83,7 +83,6 @@ export const UploadXLSX = ( { product, onParseXLSX }: uploadXLSXProps ) => {
 					resultClass: 'error',
 					result: fileError
 				});
-				//setMode({parseResult: 'error'})
 			}
 			else
 				setComparable(true);
@@ -129,12 +128,12 @@ export const UploadXLSX = ( { product, onParseXLSX }: uploadXLSXProps ) => {
 			});
 		}
 
-		const compared = forUpdating.map((ele, idx) => {	//comparing start sincerely...
+		let compared = forUpdating.map((ele, idx) => {	//comparing start sincerely...
 			const diff = [];
 			if(ele.name !== forUpdatingOrigin[idx].name){
 				diff.push('name');
 			}
-			if(ele.size !== forUpdatingOrigin[idx].size){
+			if(ele.size !== forUpdatingOrigin[idx].size && ele.size !== undefined){
 				diff.push('size');
 			}
 			if(ele.purchased_cost !== forUpdatingOrigin[idx].purchased_cost){
@@ -145,6 +144,10 @@ export const UploadXLSX = ( { product, onParseXLSX }: uploadXLSXProps ) => {
 				origin: forUpdatingOrigin[idx],
 				diff: diff,
 			}
+		})
+
+		compared = compared.filter(ele => {
+			return ele.diff.length > 0;
 		})
 
 		onParseXLSX({

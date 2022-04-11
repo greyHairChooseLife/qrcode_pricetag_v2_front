@@ -30,11 +30,11 @@ export const SpreadError = ({ error }: IErrorProps) => {
 					<div>라인번호 : {barcodeError.map((ele, idx, arr) => {
 						if(idx === arr.length-1){
 							return (
-								<span>{ele}</span>
+								<span key={ele}>{ele}</span>
 							)
 						}else{
 							return (
-								<span>{ele}, </span>
+								<span key={ele}>{ele}, </span>
 							)
 						}
 					})}</div>
@@ -44,11 +44,11 @@ export const SpreadError = ({ error }: IErrorProps) => {
 					<div>라인번호 : {nameError.map((ele, idx, arr) => {
 						if(idx === arr.length-1){
 							return (
-								<span>{ele}</span>
+								<span key={ele}>{ele}</span>
 							)
 						}else{
 							return (
-								<span>{ele}, </span>
+								<span key={ele}>{ele}, </span>
 							)
 						}
 					})}</div>
@@ -58,11 +58,11 @@ export const SpreadError = ({ error }: IErrorProps) => {
 					<div>라인번호 : {purchased_costError.map((ele, idx, arr) => {
 						if(idx === arr.length-1){
 							return (
-								<span>{ele}</span>
+								<span key={ele}>{ele}</span>
 							)
 						}else{
 							return (
-								<span>{ele}, </span>
+								<span key={ele}>{ele}, </span>
 							)
 						}
 					})}</div>
@@ -244,3 +244,14 @@ export const SpreadUpdate = ({ update }: IUpdateProps) => {
 		<div></div>
 	)
 }
+
+interface Itest {
+	func: () => void,
+}
+
+export const ApplyBtn = ({ func }: Itest) => {
+	return (
+		<button onClick={func}>APPLY</button>
+	)
+}
+

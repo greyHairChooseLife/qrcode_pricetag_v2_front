@@ -1,7 +1,7 @@
 import React, { useState, useEffect, SetStateAction, Dispatch } from 'react';
 import { ReadCurrent } from './ReadCurrent';
 import { UploadXLSX } from './UploadXLSX';
-import { SpreadUpdate, SpreadAdd, SpreadError } from './FileResult';
+import { SpreadAdd, SpreadUpdate, SpreadError, ApplyBtn } from './FileResult';
 import axios from 'axios';
 
 const api = axios.create({
@@ -22,7 +22,7 @@ type Props = {
 }
 
 interface Imode {
-	parseResult: 'current' | 'updating' | 'error',
+	parseResult: 'current' | 'addOnly' | 'updating' | 'error',
 }
 
 interface ISupplierInfo {
@@ -82,13 +82,17 @@ interface IParseXLSXError {
 
 type parseXLSXType = IParseXLSXUpdate | IParseXLSXAddOnly | IParseXLSXError;
 
+type articleType = 'current' | 'addOnly' | 'updating' | 'error';
+
 export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 	//********************************************************************
 	//		generate useState
 	//********************************************************************
-	const [supplier, setSupplier] = useState<ISupplierInfo[] | null>(null);
+	const [supplier, setSupplier] = useState<ISupplierInfo | null>(null);
 	const [product, setProduct] = useState<IProductInfo[] | null>(null);
 
+	////const [article, setArticle] = useState<any | null>(null);
+//	const [article, setArticle] = useState<articleType>('current');
 	const [mode, setMode] = useState<Imode>({
 		parseResult: 'current',
 	});
@@ -122,29 +126,48 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 
 		fetchSuppliers();
 		fetchProduct();
-	}, []);
+	}, [mode]);
 
-	let article: any = null;
-	let uploadXLSX = null;
+	//********************************************************************
+	//		axios function to post, put XLSX content
+	//********************************************************************
+	const postXLSX = (): void => {
+		const form: any[] = [];
+		if(adding !== null){
+			adding.forEach((ele: any) => {
+				ele = {...ele, supplier_id: rootMode.productId};
+				form.push(ele);
+			})
+			api.post('/product/post', form);
+		}
+		setMode({
+			parseResult: 'current',
+		})
+	}
 
+	const putXLSX = (): void => {
+		let form: any[] = [];
+		let form2: any[] = [];
+		if(updating !== null){
+			if(updating.add !== null){
+				updating.add.forEach((ele: any) => {
+					ele = {...ele, supplier_id: rootMode.productId};
+					form.push(ele);
+				})
+				api.post('/product/post', form);
+			}
+			if(updating.update !== null){
+				updating.update.forEach((ele: any) => {
+					form2.push(ele.ele);
+				})
+				api.put('/product/put', form2);
+			}
+		}
+		setMode({
+			parseResult: 'current',
+		})
+	}
 	
-	//********************************************************************
-	//		assign to article by state: mode	
-	//********************************************************************
-	if(mode.parseResult === 'current'){
-		article = <ReadCurrent product={product}></ReadCurrent>
-	}
-	else if(mode.parseResult === 'updating'){
-		article = 
-			<div>
-				<SpreadAdd add={adding}></SpreadAdd>
-				<SpreadUpdate update={updating}></SpreadUpdate>
-			</div>
-	}
-	else if(mode.parseResult === 'error'){
-		article = <SpreadError error={error}></SpreadError>
-	}
-
 	//********************************************************************
 	//		upload XLSX function
 	//********************************************************************
@@ -157,7 +180,7 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 				break;
 			case 'addOnly':
 				setAdding(form.result);
-				setMode({parseResult: 'updating'});
+				setMode({parseResult: 'addOnly'});
 				break;
 			case 'error':
 				setError(form.result);
@@ -168,14 +191,31 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 			}
 	}
 
-	uploadXLSX = <UploadXLSX product={product} onParseXLSX={onParseXLSX} ></UploadXLSX>
-	//Update Component to upload xlsx file and parse it and update states like 'add, update, err ...'
+	//********************************************************************
+	//		subComponent
+	//********************************************************************
+	const subComponent = {
+		current: 
+			<ReadCurrent product={product}></ReadCurrent>,
+		addOnly: 
+			<div>
+				<SpreadAdd add={adding}></SpreadAdd>
+				<ApplyBtn func={postXLSX}></ApplyBtn>
+			</div>,
+		updating: 
+			<div>
+				<SpreadUpdate update={updating}></SpreadUpdate>
+				<ApplyBtn func={putXLSX}></ApplyBtn>
+			</div>,
+		error: 
+			<SpreadError error={error}></SpreadError>
+	}
 
 	return (
 		<div>
-			{uploadXLSX}
-			<div>hi, I am about Product component. I am pointing {rootMode.productId}</div>
-			{article}
+			<UploadXLSX product={product} onParseXLSX={onParseXLSX} ></UploadXLSX>
+			<div>supplier ID : {rootMode.productId}</div>
+			{subComponent[mode.parseResult]}
 		</div>
 	);
 }
