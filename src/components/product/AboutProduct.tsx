@@ -129,7 +129,7 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 	}, [mode]);
 
 	//********************************************************************
-	//		axios function to post, put XLSX content
+	//		axios function to post, put XLSX content && delete all prev
 	//********************************************************************
 	const postXLSX = (): void => {
 		const form: any[] = [];
@@ -166,6 +166,20 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 		setMode({
 			parseResult: 'current',
 		})
+	}
+
+	const deleteProduct = (): void => {
+		if(window.confirm('정말로 모든 상품 정보를 삭제하시겠습니까?')){
+			const form = {supplierId: rootMode.productId};
+			api.delete('/product/delete', {
+				data: form,
+			});
+			setMode({
+				...mode,
+			})
+		}else{
+			console.log('u chosen No for no');
+		}
 	}
 	
 	//********************************************************************
@@ -215,10 +229,10 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 		<div>
 			<UploadXLSX product={product} onParseXLSX={onParseXLSX} ></UploadXLSX>
 			<div>supplier ID : {rootMode.productId}</div>
+			<div><button onClick={()=>{
+				deleteProduct();
+			}}>delete product</button></div>
 			{subComponent[mode.parseResult]}
 		</div>
 	);
 }
-
-
-
