@@ -1,4 +1,5 @@
 import React from 'react'
+import { Tag } from './TagMaker'
 
 interface IProductInfo {
 	id: number,
@@ -35,6 +36,7 @@ export const ReadCurrent = ({ product }: currentPropsType) => {
 
 		return (
 			<div>
+				<div><Tag></Tag></div>
 				<table>
 					<thead>
 						<tr>
