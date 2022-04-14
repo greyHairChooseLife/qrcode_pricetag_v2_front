@@ -1,6 +1,8 @@
-import React from 'react'
-import { Tag } from './TagMaker'
+import React, { useState, Dispatch, SetStateAction }from 'react'
 
+	//********************************************************************
+	//		Type Def	
+	//********************************************************************
 interface IProductInfo {
 	id: number,
 	product_code: string,
@@ -12,11 +14,19 @@ interface IProductInfo {
 	barcode: string,
 }
 
-type currentPropsType = {
-	product: IProductInfo[] | null,
+interface Imode {
+	parseResult: 'current' | 'addOnly' | 'updating' | 'error' | 'printTag',
+	printList: string[],
 }
 
-export const ReadCurrent = ({ product }: currentPropsType) => {
+type currentPropsType = {
+	product: IProductInfo[] | null,
+	setMode: Dispatch<SetStateAction<Imode>>,
+}
+
+export const ReadCurrent = ({ product, setMode }: currentPropsType) => {
+	const [genTagChecked, setGenTagChecked] = useState<string[]>([]);
+
 	//if(product === null || []) return (<div>등록된 상품이 없습니다.</div>)
 	if(product === null) return (<div>등록된 상품이 없습니다.</div>)
 	else{
@@ -36,7 +46,15 @@ export const ReadCurrent = ({ product }: currentPropsType) => {
 
 		return (
 			<div>
-				<div><Tag></Tag></div>
+				<form method="post" id="checked" onSubmit={(e)=>{
+					e.preventDefault();
+					setMode({
+						parseResult: 'printTag',
+						printList: [...genTagChecked],
+					});
+				}}>
+					<button type="submit">MAKE</button>
+				</form>
 				<table>
 					<thead>
 						<tr>
@@ -44,6 +62,7 @@ export const ReadCurrent = ({ product }: currentPropsType) => {
 							<th>size</th>
 							<th>purchased_cost</th>
 							<th>barcode</th>
+							<th>PRINT</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -54,6 +73,9 @@ export const ReadCurrent = ({ product }: currentPropsType) => {
 									<td>{ele.size}</td>
 									<td>{ele.purchased_cost}</td>
 									<td>{ele.barcode}</td>
+									<td><input form="checked" type="checkbox" name="barcodes" value={ele.barcode} onClick={(e)=>{
+										setGenTagChecked([...genTagChecked, e.currentTarget.value])
+									}}></input></td>
 								</tr>
 							);
 						})}

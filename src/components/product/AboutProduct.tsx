@@ -2,6 +2,7 @@ import React, { useState, useEffect, SetStateAction, Dispatch } from 'react';
 import { ReadCurrent } from './ReadCurrent';
 import { UploadXLSX } from './UploadXLSX';
 import { SpreadAdd, SpreadUpdate, SpreadError, ApplyBtn } from './FileResult';
+import { TagPage } from './TagMaker';
 import axios from 'axios';
 
 const api = axios.create({
@@ -22,7 +23,8 @@ type Props = {
 }
 
 interface Imode {
-	parseResult: 'current' | 'addOnly' | 'updating' | 'error',
+	parseResult: 'current' | 'addOnly' | 'updating' | 'error' | 'printTag',
+	printList: string[],
 }
 
 interface ISupplierInfo {
@@ -91,10 +93,9 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 	const [supplier, setSupplier] = useState<ISupplierInfo | null>(null);
 	const [product, setProduct] = useState<IProductInfo[] | null>(null);
 
-	////const [article, setArticle] = useState<any | null>(null);
-//	const [article, setArticle] = useState<articleType>('current');
 	const [mode, setMode] = useState<Imode>({
 		parseResult: 'current',
+		printList: []
 	});
 
 	const [current, setCurrent] = useState<IProductInfo[] | null>(null);
@@ -140,7 +141,7 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 			})
 			api.post('/product/post', form);
 		}
-		setMode({
+		setMode({...mode,
 			parseResult: 'current',
 		})
 	}
@@ -164,6 +165,7 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 			}
 		}
 		setMode({
+			...mode,
 			parseResult: 'current',
 		})
 	}
@@ -190,15 +192,15 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 			case 'update':
 				//setUpdating({...form.result}) console.log('update: ', form.result); break;
 				setUpdating(form.result);
-				setMode({parseResult: 'updating'});
+				setMode({...mode, parseResult: 'updating'});
 				break;
 			case 'addOnly':
 				setAdding(form.result);
-				setMode({parseResult: 'addOnly'});
+				setMode({...mode, parseResult: 'addOnly'});
 				break;
 			case 'error':
 				setError(form.result);
-				setMode({parseResult: 'error'});
+				setMode({...mode, parseResult: 'error'});
 				break;
 			default:
 				break;
@@ -210,7 +212,7 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 	//********************************************************************
 	const subComponent = {
 		current: 
-			<ReadCurrent product={product}></ReadCurrent>,
+			<ReadCurrent product={product} setMode={setMode}></ReadCurrent>,
 		addOnly: 
 			<div>
 				<SpreadAdd add={adding}></SpreadAdd>
@@ -222,16 +224,18 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 				<ApplyBtn func={putXLSX}></ApplyBtn>
 			</div>,
 		error: 
-			<SpreadError error={error}></SpreadError>
+			<SpreadError error={error}></SpreadError>,
+		printTag:
+			<TagPage printList={mode.printList}></TagPage>
 	}
 
 	return (
 		<div>
-			<UploadXLSX product={product} onParseXLSX={onParseXLSX} ></UploadXLSX>
+			{mode.parseResult !== 'printTag' && <UploadXLSX product={product} onParseXLSX={onParseXLSX} ></UploadXLSX>}
 			<div>supplier ID : {rootMode.productId}</div>
-			<div><button onClick={()=>{
+			{mode.parseResult !== 'printTag' && <div><button onClick={()=>{
 				deleteProduct();
-			}}>delete product</button></div>
+			}}>delete product</button></div>}
 			{subComponent[mode.parseResult]}
 		</div>
 	);
