@@ -16,7 +16,7 @@ interface IProductInfo {
 
 interface Imode {
 	parseResult: 'current' | 'addOnly' | 'updating' | 'error' | 'printTag',
-	printList: string[],
+	printList: [string, string][],
 }
 
 type currentPropsType = {
@@ -25,7 +25,7 @@ type currentPropsType = {
 }
 
 export const ReadCurrent = ({ product, setMode }: currentPropsType) => {
-	const [genTagChecked, setGenTagChecked] = useState<string[]>([]);
+	const [genTagChecked, setGenTagChecked] = useState<[string, string][]>([]);
 
 	//if(product === null || []) return (<div>등록된 상품이 없습니다.</div>)
 	if(product === null) return (<div>등록된 상품이 없습니다.</div>)
@@ -50,7 +50,7 @@ export const ReadCurrent = ({ product, setMode }: currentPropsType) => {
 					e.preventDefault();
 					setMode({
 						parseResult: 'printTag',
-						printList: [...genTagChecked],
+						printList: genTagChecked,
 					});
 				}}>
 					<button type="submit">MAKE</button>
@@ -74,7 +74,7 @@ export const ReadCurrent = ({ product, setMode }: currentPropsType) => {
 									<td>{ele.purchased_cost}</td>
 									<td>{ele.barcode}</td>
 									<td><input form="checked" type="checkbox" name="barcodes" value={ele.barcode} onClick={(e)=>{
-										setGenTagChecked([...genTagChecked, e.currentTarget.value])
+										setGenTagChecked([...genTagChecked, [e.currentTarget.value, ele.name]])
 									}}></input></td>
 								</tr>
 							);

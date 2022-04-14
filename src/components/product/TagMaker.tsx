@@ -1,7 +1,7 @@
 import react, { useState, useEffect } from 'react'
 
 type TagPageProps = {
-	printList: string[];
+	printList: [string, string][];
 }
 
 export const TagPage = ({ printList }: TagPageProps) => {
@@ -22,7 +22,7 @@ export const TagPage = ({ printList }: TagPageProps) => {
 				correctLevel : newWindowObj.QRCode.CorrectLevel.H
 			});
 
-			newWindowObj.JsBarcode(`#barcode_${idx}`, ele, {
+			newWindowObj.JsBarcode(`#barcode_${idx}`, ele[0], {
 				format: "CODE128",
 				lineColor: "black",
 				width: 2.5,
@@ -40,6 +40,7 @@ export const TagPage = ({ printList }: TagPageProps) => {
 		return (
 			<div key={idx}>
 				<div id={qrcode}></div>
+				<div>{ele[1]}</div>
 				<svg id={barcode}></svg>
 			</div>
 		)

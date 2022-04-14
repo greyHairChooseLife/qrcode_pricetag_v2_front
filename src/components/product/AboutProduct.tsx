@@ -24,7 +24,7 @@ type Props = {
 
 interface Imode {
 	parseResult: 'current' | 'addOnly' | 'updating' | 'error' | 'printTag',
-	printList: string[],
+	printList: [string, string][],
 }
 
 interface ISupplierInfo {
