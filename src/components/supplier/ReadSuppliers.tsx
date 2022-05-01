@@ -107,17 +107,18 @@ export const ReadSuppliers = ({ suppliers, isUpdate, setIsUpdate, onUpdateSubmit
 	}
 
 	return (
-		<div>
-			<form id="updateForm" onSubmit={handleSubmit}></form>
+		<div className="suppliersTableBox">
+			<form id="updateForm" onSubmit={handleSubmit} autoComplete="off"></form>
 			{suppliers !== null ? 
-				<table className="suppliersListTable">
+				<table className="suppliersTable">
 					<thead>
 						<tr>
-							<th>name</th>
-							<th>address</th>
-							<th>contact</th>
-							<th>note?</th>
-							<th>margin_ratio?</th>
+							<th>거래처명</th>
+							<th>주소</th>
+							<th>연락처</th>
+							<th>메모</th>
+							<th>마진율</th>
+							<th>옵션</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -130,18 +131,20 @@ export const ReadSuppliers = ({ suppliers, isUpdate, setIsUpdate, onUpdateSubmit
 										<td><input form="updateForm" onChange={onChange} value={updateForm.contact} name="contact"></input></td>
 										<td><input form="updateForm" onChange={onChange} value={updateForm.note} name="note"></input></td>
 										<td><input form="updateForm" onChange={onChange} value={updateForm.margin_ratio} name="margin_ratio"></input></td>
-										<td><button form="updateForm" type="submit">확인</button></td>
-										<td><UpdateSwitch eleId={ele.id} isUpdate={isUpdate} setIsUpdate={setIsUpdate} /></td>
-										<td><DeleteBtn eleId={ele.id} onDeleteSubmit={onDeleteSubmit} setIsUpdate={setIsUpdate} /></td>
+										<td>
+											<td><button form="updateForm" type="submit">확인</button></td>
+											<td><DeleteBtn eleId={ele.id} onDeleteSubmit={onDeleteSubmit} setIsUpdate={setIsUpdate} /></td>
+											<td><UpdateSwitch eleId={ele.id} isUpdate={isUpdate} setIsUpdate={setIsUpdate} /></td>
+										</td>
 									</tr>
 								)
 							}else{
 								return (
-									<tr key={ele.id}>
+									<tr key={ele.id} className="list">
 										<td onClick={()=>{handleSetMode(ele.id)}}>{ele.name}</td>
 										<td onClick={()=>{handleSetMode(ele.id)}}>{ele.address}</td>
 										<td onClick={()=>{handleSetMode(ele.id)}}>{ele.contact}</td>
-										<td onClick={()=>{handleSetMode(ele.id)}}>{ele.note}</td>
+										<td onClick={()=>{handleSetMode(ele.id)}}><div>{ele.note}</div></td>
 										<td onClick={()=>{handleSetMode(ele.id)}}>{ele.margin_ratio}</td>
 										<td><UpdateSwitch eleId={ele.id} isUpdate={isUpdate} setIsUpdate={setIsUpdate} setUpdateForm={setUpdateForm} suppliers={suppliers} /></td>
 									</tr>
@@ -153,7 +156,6 @@ export const ReadSuppliers = ({ suppliers, isUpdate, setIsUpdate, onUpdateSubmit
 				:
 				<p>등록된 거래처가 없습니다:(</p>
 			}
-			
 		</div>
 	)
 }
@@ -195,7 +197,7 @@ const UpdateSwitch = ({ eleId, isUpdate, setIsUpdate, setUpdateForm, suppliers }
 						margin_ratio: selected.margin_ratio,
 					});
 				}
-			}}>update</button>
+			}}>수정</button>
 		)
 	}else{
 		return(					
@@ -206,7 +208,7 @@ const UpdateSwitch = ({ eleId, isUpdate, setIsUpdate, setUpdateForm, suppliers }
 						target: 0, 
 					});
 				}
-			}}>cancel</button>
+			}}>취소</button>
 		)
 	}
 }
@@ -221,11 +223,13 @@ type deleteBtnProps = {
 const DeleteBtn = ({ eleId, onDeleteSubmit, setIsUpdate }: deleteBtnProps) => {
 	return (
 		<button onClick={()=>{
-			onDeleteSubmit({id: eleId});
-			setIsUpdate({
-				active: false,
-				target: 0, 
-			});
-		}}>delete</button>
+			if(window.confirm('모든 상품 정보가 삭제됩니다. 정말로 삭제하시겠습니까?')){
+				onDeleteSubmit({id: eleId});
+				setIsUpdate({
+					active: false,
+					target: 0, 
+				});
+			}
+		}}>삭제</button>
 	)
 }

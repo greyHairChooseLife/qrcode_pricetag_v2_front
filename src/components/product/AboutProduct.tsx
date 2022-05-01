@@ -233,9 +233,7 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 		<div>
 			{mode.parseResult !== 'printTag' && <UploadXLSX product={product} onParseXLSX={onParseXLSX} ></UploadXLSX>}
 			<div>supplier ID : {rootMode.productId}</div>
-			{mode.parseResult !== 'printTag' && <div><button onClick={()=>{
-				deleteProduct();
-			}}>delete product</button></div>}
+			{mode.parseResult !== 'printTag' && <div><button onClick={()=>{ deleteProduct() }}>delete product</button></div>}
 			{subComponent[mode.parseResult]}
 		</div>
 	);

@@ -76,15 +76,17 @@ export const CreateSupplierForm = ({ onCreateSubmit, isCreate, setIsCreate }: Pr
 	}
 
 	return (
-		<form onSubmit={handleSubmit}>
-			<input placeholder="이름" name="name" value={form.name} onChange={onChange} />
-			<input placeholder="주소" name="address" value={form.address} onChange={onChange} />
-			<input placeholder="전화번호" name="contact" value={form.contact} onChange={onChange} />
-			<input placeholder="비고" name="note" value={form.note} onChange={onChange} />
-			<input placeholder="마진률" name="margin_ratio" value={form.margin_ratio} onChange={onChange} />
-			<button type="submit">confirm</button>
-			<button onClick={() => onClick(isCreate)}>cancel</button>
-		</form>
+		<div className="createForm">
+			<form onSubmit={handleSubmit} autoComplete="off">
+				<input placeholder="이름" name="name" value={form.name} onChange={onChange} />
+				<input placeholder="주소" name="address" value={form.address} onChange={onChange} />
+				<input placeholder="전화번호" name="contact" value={form.contact} onChange={onChange} />
+				<input placeholder="비고" name="note" value={form.note} onChange={onChange} />
+				<input placeholder="마진률" name="margin_ratio" value={form.margin_ratio} onChange={onChange} />
+				<button type="submit">확인</button>
+				<button onClick={() => onClick(isCreate)}>취소</button>
+			</form>
+		</div>
 	)
 }
 
@@ -97,9 +99,9 @@ export const CreateSupplierButton = ({ isCreate, setIsCreate }: createBtnType) =
 		setIsCreate(!isCreate);
 	}
 	return (
-		<div>
+		<div className="createButton">
 			<button onClick={() => onClick(isCreate)}>
-				add supplier +
+				거래처 추가하기
 			</button>
 		</div>
 	)

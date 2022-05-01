@@ -1,6 +1,7 @@
 import React, { useState, useEffect, SetStateAction, Dispatch } from 'react';
 import { CreateSupplierForm, CreateSupplierButton } from './CreateSupplierForm';
 import { ReadSuppliers } from './ReadSuppliers';
+import './AboutSupplier.css';
 import axios from 'axios';
 
 const api = axios.create({
@@ -112,7 +113,7 @@ export const AboutSupplier = ({ setRootMode }: Props) => {
 	if (!suppliers) return null;
 
 	return (
-		<div>
+		<div className="supplierBoard">
 			{read}
 			{isCreate ? onCreate : offCreate}
 		</div>

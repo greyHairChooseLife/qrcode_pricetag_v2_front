@@ -1,18 +1,29 @@
-body {
-	margin: 30px;
+:root {
+	--table-bg-color: #1A1A2E;
+	--selected-bg-color: rgba(200, 200, 200, 0.5);
+	--button-bg-color-bf: rgba(15, 0, 255, 0.3);
+	--button-bg-color-af: rgba(15, 0, 255);
+	--delete-button-bg-color-bf: rgba(233, 69, 96, 0.5);
+	--delete-button-bg-color-af: rgba(233, 69, 96);
+
+	--thead-bg-color: #0F3460;
 }
 
-.suppliersListTable>tbody>tr>td {
+body {
+	margin: 0;
+	background-color: #1597E5;
+	background-color: silver;
 }
-.suppliersListTable {
-	font-size: 30px;
+
+.supplierBoard {
+	position: absolute;
+	top: 3vh;
+	left: 2.5vw;
+	height: 82vh;
+	width: 85vw;
+	background-color: var(--table-bg-color);
+	border-radius: 20px;
+	padding: 5vw;
+	padding-top: 3vh;
 }
-td {
-	border: solid 1px black;
-	padding: 20px;
-}
-th {
-	padding: 20px;
-	background-color: grey;
-	color: white;
-}
+
