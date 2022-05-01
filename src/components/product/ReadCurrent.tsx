@@ -75,8 +75,18 @@ export const ReadCurrent = ({ product, setMode }: currentPropsType) => {
 									<td>{ele.size}</td>
 									<td>{ele.purchased_cost}</td>
 									<td>{ele.barcode}</td>
-									<td><input form="checked" type="checkbox" name="barcodes" value={ele.barcode} onClick={(e)=>{
-										setGenTagChecked([...genTagChecked, [e.currentTarget.value, ele.name]])
+									<td><input form="checked" type="checkbox" name="barcodes" value={ele.barcode} onChange={(e)=>{
+										if(e.target.checked === true){
+											setGenTagChecked([...genTagChecked, [e.currentTarget.value, ele.name]])
+										}
+										else{
+											let temp = genTagChecked;
+											temp.forEach((ele, i) => {
+												if(ele[0] === e.currentTarget.value)
+													temp.splice(i, 1);
+											})
+											setGenTagChecked([...temp]);
+										}
 									}}></input></td>
 								</tr>
 							);
