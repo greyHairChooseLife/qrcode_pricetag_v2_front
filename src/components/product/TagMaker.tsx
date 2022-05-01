@@ -9,10 +9,8 @@ export const TagPage = ({ printList }: TagPageProps) => {
 	const newWindowObj = window as any;
 
 	useEffect(()=>{
-
-
-		let qr_url = `http://google.com`;
 		printList.forEach((ele, idx) => {
+			let qr_url = `http://localhost:3002/price/${ele[0]}`;
 			new newWindowObj.QRCode(document.getElementById(`qrcode_${idx}`), {
 				text: qr_url,
 				width: 60,

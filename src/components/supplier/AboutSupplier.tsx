@@ -56,7 +56,7 @@ export const AboutSupplier = ({ setRootMode }: Props) => {
 				setError(null);
 				setSuppliers(null);
 				setLoading(true);
-				const response = await api.get('/supplier/get');
+				const response = await api.get('/supplier');
 				setSuppliers(response.data);
 			} catch (error: any) {
 				setError(error);
@@ -72,7 +72,7 @@ export const AboutSupplier = ({ setRootMode }: Props) => {
 	//********************************************************************
 	const onCreateSubmit = (form: createFormType) => {
 		form.margin_ratio = Number(form.margin_ratio);
-		api.post('/supplier/post', {
+		api.post('/supplier', {
 			...form,
 		});
 		setReRender([...reRender]);
@@ -89,14 +89,14 @@ export const AboutSupplier = ({ setRootMode }: Props) => {
 	//********************************************************************
 	const onUpdateSubmit = (form: { id: number, name: string, address: string, contact: string, note?: string, margin_ratio?: string | number }) => {
 		form.margin_ratio = Number(form.margin_ratio);
-		api.put('/supplier/put', {
+		api.put('/supplier', {
 			...form,
 		});
 		setReRender([...reRender]);
 	}
 
 	const onDeleteSubmit = (form: { id: number }) => {
-		api.delete('/supplier/delete', {
+		api.delete('/supplier', {
 			data: {...form}
 		});
 		setReRender([...reRender]);

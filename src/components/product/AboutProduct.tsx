@@ -109,7 +109,7 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 	useEffect(() => {
 		const fetchSuppliers = async () => {
 			try{
-				const response = await api.get('/supplier/get');
+				const response = await api.get('/supplier');
 				setSupplier(response.data);
 			} catch (err: any){
 				throw err;
@@ -118,7 +118,7 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 
 		const fetchProduct = async () => {
 			try{
-				const response = await api.get(`/product/get/${rootMode.productId}`);
+				const response = await api.get(`/product/${rootMode.productId}`);
 					setProduct(response.data);
 			} catch (err: any){
 				throw err;
@@ -139,7 +139,7 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 				ele = {...ele, supplier_id: rootMode.productId};
 				form.push(ele);
 			})
-			api.post('/product/post', form);
+			api.post('/product', form);
 		}
 		setMode({...mode,
 			parseResult: 'current',
@@ -155,13 +155,13 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 					ele = {...ele, supplier_id: rootMode.productId};
 					form.push(ele);
 				})
-				api.post('/product/post', form);
+				api.post('/product', form);
 			}
 			if(updating.update !== null){
 				updating.update.forEach((ele: any) => {
 					form2.push(ele.ele);
 				})
-				api.put('/product/put', form2);
+				api.put('/product', form2);
 			}
 		}
 		setMode({
@@ -173,7 +173,7 @@ export const AboutProduct = ({ rootMode, setRootMode }: Props) => {
 	const deleteProduct = (): void => {
 		if(window.confirm('정말로 모든 상품 정보를 삭제하시겠습니까?')){
 			const form = {supplierId: rootMode.productId};
-			api.delete('/product/delete', {
+			api.delete('/product', {
 				data: form,
 			});
 			setMode({
